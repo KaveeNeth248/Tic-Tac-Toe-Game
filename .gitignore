@@ -1,41 +1,93 @@
-# Prerequisites
-*.d
+#include <iostream>
+using namespace std;
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+char board[3][3]; // 3x3 board
 
-# Precompiled Headers
-*.gch
-*.pch
+void initBoard() {
+    char num = '1';
+    for (int i=0; i<3; i++)
+        for (int j=0; j<3; j++)
+            board[i][j] = num++;
+}
 
-# Linker files
-*.ilk
+void showHeader() {
+    cout << "=====================================\n";
+    cout << "        🎮 TIC TAC TOE GAME 🎮        \n";
+    cout << "=====================================\n";
+}
 
-# Debugger Files
-*.pdb
+void displayBoard() {
+    cout << "\n";
+    cout << "-------------\n";
+    for (int i=0; i<3; i++) {
+        cout << "| ";
+        for (int j=0; j<3; j++) {
+            cout << board[i][j] << " | ";
+        }
+        cout << "\n-------------\n";
+    }
+    cout << "\n";
+}
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+bool checkWin(char player) {
+    for (int i=0; i<3; i++)
+        if (board[i][0]==player && board[i][1]==player && board[i][2]==player) return true;
+    for (int j=0; j<3; j++)
+        if (board[0][j]==player && board[1][j]==player && board[2][j]==player) return true;
+    if (board[0][0]==player && board[1][1]==player && board[2][2]==player) return true;
+    if (board[0][2]==player && board[1][1]==player && board[2][0]==player) return true;
+    return false;
+}
 
-# Fortran module files
-*.mod
-*.smod
+bool checkDraw() {
+    for (int i=0; i<3; i++)
+        for (int j=0; j<3; j++)
+            if (board[i][j] != 'X' && board[i][j] != 'O')
+                return false;
+    return true;
+}
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+bool makeMove(char player, int pos) {
+    int row = (pos-1)/3;
+    int col = (pos-1)%3;
+    if (pos < 1 || pos > 9) return false;
+    if (board[row][col]=='X' || board[row][col]=='O') return false;
+    board[row][col] = player;
+    return true;
+}
 
-# Executables
-*.exe
-*.out
-*.app
+int main() {
+    initBoard();
+    char currentPlayer = 'X';
+    bool gameOver = false;
 
-# debug information files
-*.dwo
+    showHeader();
+    displayBoard();
+
+    while (!gameOver) {
+        int move;
+        cout << "Player " << currentPlayer << ", enter position (1-9): ";
+        cin >> move;
+
+        if (!makeMove(currentPlayer, move)) {
+            cout << "❌ Invalid move! Try again.\n";
+            continue;
+        }
+
+        displayBoard();
+
+        if (checkWin(currentPlayer)) {
+            cout << "🏆 Player " << currentPlayer << " wins!\n";
+            gameOver = true;
+        } else if (checkDraw()) {
+            cout << "🤝 It's a draw!\n";
+            gameOver = true;
+        } else {
+            currentPlayer = (currentPlayer=='X') ? 'O' : 'X';
+        }
+    }
+
+    cout << "Game Over. Thanks for playing! 🎉\n";
+    return 0;
+}
+
